@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccd.backend.mapper.WeblinksMapper">
+    <sql id="Base_Column_List">
+        id,
+        link,
+        title
+    </sql>
+    <resultMap id="User" type="com.ccd.backend.entity.Weblinks">
+        <id column="id" property="id"/>
+        <result column="link" property="link"/>
+        <result column="title" property="title"/>
+    </resultMap>
+
+
+</mapper>
+

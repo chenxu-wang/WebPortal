@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ccd.backend.mapper.UserMapper">
+    <sql id="Base_Column_List">
+        id,
+        username,
+        `password`,
+        usertype
+    </sql>
+    <resultMap id="User" type="com.ccd.backend.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="usertype" property="usertype"/>
+    </resultMap>
+    <select id="login" resultMap="User">
+        select * from user
+        where username = #{username} and password = #{password}
+            limit 1
+    </select>
+    <select id="detail" resultMap="User">
+        select * from user
+        <include refid="UserFindCriteria"></include>
+        limit 1
+    </select>
+    <sql id="UserFindCriteria">
+        <where>
+            <if test="id !=null">and id = #{id}</if>
+            <if test="username !=null and username !=''" >and username like concat('%',#{username},'%')</if>
+            <if test="password !=null and password !=''" >and password = #{password}</if>
+            <if test="usertype !=null and usertype !=''">and balance = #{balance}</if>
+        </where>
+    </sql>
+    <insert id="create"  keyProperty="id" useGeneratedKeys="true" parameterType="com.ccd.backend.entity.User">
+        insert into user(id,username,password,usertype)
+            value(#{id},#{username},#{password},#{usertype})
+    </insert>
+    <select id="query" resultMap="User">
+        select * from user
+        where id = #{id}
+    </select>
+
+</mapper>
+
