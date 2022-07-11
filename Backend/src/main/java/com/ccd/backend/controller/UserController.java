@@ -19,8 +19,6 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
-//    @Autowired
-//    private ;
 
     @PostMapping("/create")
     public Result create(@RequestBody User user) {

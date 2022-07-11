@@ -3,6 +3,12 @@ package com.ccd.backend.entity;
 public class Weblinks {
 
 
+    public Weblinks(Integer id, String link, String title) {
+        this.id = id;
+        this.link = link;
+        this.title = title;
+    }
+
     public Integer getId() {
         return id;
     }

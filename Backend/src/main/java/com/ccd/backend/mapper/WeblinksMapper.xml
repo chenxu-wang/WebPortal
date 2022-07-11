@@ -6,12 +6,32 @@
         link,
         title
     </sql>
-    <resultMap id="User" type="com.ccd.backend.entity.Weblinks">
+    <resultMap id="Weblinks" type="com.ccd.backend.entity.Weblinks">
         <id column="id" property="id"/>
         <result column="link" property="link"/>
         <result column="title" property="title"/>
     </resultMap>
-
+    <sql id="WeblinksFindCriteria">
+        <where>
+            <if test="id !=null">and id = #{id}</if>
+            <if test="link !=null and link !=''" >and link like concat('%',#{link},'%')</if>
+            <if test="title !=null and title !=''" >and title = #{title}</if>
+        </where>
+    </sql>
+    <insert id="create"  keyProperty="id" useGeneratedKeys="true" parameterType="com.ccd.backend.entity.Weblinks">
+        insert into weblinks(id,link,title)
+            value(#{id},#{link},#{title})
+    </insert>
+    <select id="query" resultMap="Weblinks">
+        select * from weblinks
+    </select>
+    <delete id="delete" parameterType="int">
+        delete from weblinks where id = #{id}
+    </delete>
+    <update id="update" parameterType="com.ccd.backend.entity.Weblinks">
+        update weblinks set
+        link = #{link}, title = #{title} where id = #{id}
+    </update>
 
 </mapper>
 
