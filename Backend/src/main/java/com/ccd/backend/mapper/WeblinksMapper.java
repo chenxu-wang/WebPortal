@@ -12,6 +12,7 @@ public interface WeblinksMapper {
     public int create(Weblinks weblinks);
     public int updateWeblinks(Weblinks weblinks);
     public List<Weblinks> query();
+    public List<Weblinks> queryByCat(String category);
     public int delete(Integer id);
     public int update(Weblinks weblinks);
 }

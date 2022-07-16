@@ -7,3 +7,39 @@ body{
   color: #333;
   background: @bgcolor;
 }
+#app{
+  height: 100vh;
+  background: #efefef;
+}
+header{
+  height: 70px;
+  background: #071d49;
+  padding: 10px 20px;
+  img{
+    height: 30px;
+    width: 170px;
+  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.container{
+  display: flex;
+  justify-content: space-between;
+  .aside{
+    height: calc(100vh - 100px);
+  }
+  .container_box{
+    flex: 1;
+    box-sizing: border-box;
+    padding: 15px;
+  }
+}
+footer{
+  height: 70px;
+  background: #071d49;
+  color:#ffffff;
+  text-align: center;
+  line-height: 70px;
+}

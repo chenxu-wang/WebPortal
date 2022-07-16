@@ -4,18 +4,24 @@
     <sql id="Base_Column_List">
         id,
         link,
-        title
+        title,
+        category,
+        description
     </sql>
     <resultMap id="Weblinks" type="com.ccd.backend.entity.Weblinks">
         <id column="id" property="id"/>
         <result column="link" property="link"/>
         <result column="title" property="title"/>
+        <result column="category" property="category"/>
+        <result column="description" property="description"/>
     </resultMap>
     <sql id="WeblinksFindCriteria">
         <where>
             <if test="id !=null">and id = #{id}</if>
             <if test="link !=null and link !=''" >and link like concat('%',#{link},'%')</if>
             <if test="title !=null and title !=''" >and title = #{title}</if>
+            <if test="category !=null and category !=''" >and category = #{category}</if>
+            <if test="description !=null and description !=''" >and description = #{description}</if>
         </where>
     </sql>
     <insert id="create"  keyProperty="id" useGeneratedKeys="true" parameterType="com.ccd.backend.entity.Weblinks">
@@ -25,12 +31,16 @@
     <select id="query" resultMap="Weblinks">
         select * from weblinks
     </select>
+    <select id="queryByCat" resultMap="Weblinks">
+        select * from weblinks
+        where category = #{category}
+    </select>
     <delete id="delete" parameterType="int">
         delete from weblinks where id = #{id}
     </delete>
     <update id="update" parameterType="com.ccd.backend.entity.Weblinks">
         update weblinks set
-        link = #{link}, title = #{title} where id = #{id}
+        link = #{link}, title = #{title}, description = #{description}, category = #{category} where id = #{id}
     </update>
 
 </mapper>

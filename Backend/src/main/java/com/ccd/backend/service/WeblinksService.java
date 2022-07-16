@@ -19,6 +19,9 @@ public class WeblinksService {
     public List<Weblinks> query(){
         return weblinksMapper.query();
     }
+    public List<Weblinks> queryByCat(String category){
+        return weblinksMapper.queryByCat(category);
+    }
     public int delete(Integer id){ return weblinksMapper.delete(id); }
     public int update(Weblinks weblinks){ return weblinksMapper.update(weblinks); }
 }

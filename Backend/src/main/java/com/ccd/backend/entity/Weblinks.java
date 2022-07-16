@@ -2,11 +2,24 @@ package com.ccd.backend.entity;
 
 public class Weblinks {
 
+    private Integer id;
+    private String link;
+    private String title;
+    private String description;
+    private String category;
 
     public Weblinks(Integer id, String link, String title) {
         this.id = id;
         this.link = link;
         this.title = title;
+    }
+
+    public Weblinks(Integer id, String link, String title, String description, String category) {
+        this.id = id;
+        this.link = link;
+        this.title = title;
+        this.description = description;
+        this.category = category;
     }
 
     public Integer getId() {
@@ -32,7 +45,21 @@ public class Weblinks {
     public void setTitle(String title) {
         this.title = title;
     }
-    private Integer id;
-    private String link;
-    private String title;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
 }

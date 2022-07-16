@@ -37,11 +37,18 @@ public class WeblinksController {
         Integer id = Integer.parseInt(map.get("id"));
         String title = map.get("title");
         String link = map.get("link");
-        Weblinks weblinks = new Weblinks(id, link, title);
+        String description = map.get("description");
+        String category = map.get("category");
+        Weblinks weblinks = new Weblinks(id, link, title,category,description);
         return Result.ok( weblinksService.update(weblinks));
     }
     @PostMapping("/query")
     public Result query() {
         return Result.ok(Maps.build().put("weblinks",weblinksService.query()).getMap());
+    }
+    @PostMapping("/queryByCat")
+    public Result queryByCat(@RequestBody Map<String, String> map) {
+        String category = map.get("category");
+        return Result.ok(Maps.build().put("weblinks",weblinksService.queryByCat(category)).getMap());
     }
 }
