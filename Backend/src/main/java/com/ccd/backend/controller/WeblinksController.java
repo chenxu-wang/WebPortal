@@ -22,7 +22,12 @@ public class WeblinksController {
     private WeblinksService weblinksService;
 
     @PostMapping("/create")
-    public Result create(@RequestBody Weblinks weblinks) {
+    public Result create(@RequestBody Map<String, String> map) {
+        String title = map.get("title");
+        String link = map.get("link");
+        String description = map.get("description");
+        String category = map.get("category");
+        Weblinks weblinks = new Weblinks(link, title,description,category);
         weblinksService.create(weblinks);
         return Result.ok(weblinks);
     }
@@ -39,7 +44,7 @@ public class WeblinksController {
         String link = map.get("link");
         String description = map.get("description");
         String category = map.get("category");
-        Weblinks weblinks = new Weblinks(id, link, title,category,description);
+        Weblinks weblinks = new Weblinks(id, link, title,description,category);
         return Result.ok( weblinksService.update(weblinks));
     }
     @PostMapping("/query")

@@ -1,11 +1,12 @@
 import {Collapse, Table, Button, Popover, Space, message, Modal, Form, Input, Select} from 'antd';
 import React, {useState, useEffect} from 'react';
-import {queryLinkApi, deleteLinkApi, LoginApi, updateLinkApi} from "../request/api";
+import {queryLinkApi, deleteLinkApi, updateLinkApi, createLinkApi} from "../request/api";
 const { Option } = Select;
 const {Panel} = Collapse;
 
-
 export default function Links() {
+    const [form] = Form.useForm();
+    const [otherList, setOtherList] = useState([])
     const [perksList, setPerksList] = useState([])
     const [financeList, setFinanceList] = useState([])
     const [dataList, setDataList] = useState([])
@@ -15,13 +16,38 @@ export default function Links() {
     const [editForm, setEditForm] = useState([]);
     const [dashboardsList, setDashboardsList] = useState([])
     const [visible, setVisible] = useState(false);
+    const [visibleAdd, setVisibleAdd] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [confirmLoadingAdd, setConfirmLoadingAdd] = useState(false);
     const showModal = (data) => {
         setVisible(true);
         setEditForm(data);
     };
-    const handleOk = (values) => {
-        console.log(values)
+    const showModalAdd = () => {
+        setVisibleAdd(true);
+    };
+    const onAdd = (values) => {
+        createLinkApi({
+            category: values.category,
+            description: values.description,
+            title: values.title,
+            link: values.link
+        }).then(res=>{
+            if(res.status === 200) {
+                message.success(res.msg);
+                getLinksList();
+                setConfirmLoadingAdd(true);
+                form.resetFields();
+                setTimeout(() => {
+                    setVisibleAdd(false);
+                    setConfirmLoadingAdd(false);
+                }, 1000);
+            }else{
+                message.error(res.msg);
+            }
+        })
+    }
+    const onFinish = (values) => {
         updateLinkApi({
 
             id: editForm.key,
@@ -34,6 +60,7 @@ export default function Links() {
                 message.success(res.msg);
                 getLinksList();
                 setConfirmLoading(true);
+                form.resetFields();
                 setTimeout(() => {
                     setVisible(false);
                     setConfirmLoading(false);
@@ -46,11 +73,23 @@ export default function Links() {
     };
 
     const handleCancel = () => {
-        console.log('Clicked cancel button');
         setVisible(false);
+    };
+    const handleCancelAdd = () => {
+        setVisibleAdd(false);
     };
 
     const getLinksList = () => {
+        queryLinkApi({"category": "other"}).then(
+            res => {
+                let newArr = JSON.parse(JSON.stringify(res.data.weblinks))
+                //the tables require key
+                newArr.map(item => {
+                    item.key = item.id
+                })
+                setOtherList(newArr)
+            }
+        )
         queryLinkApi({"category": "perks"}).then(
             res => {
                 let newArr = JSON.parse(JSON.stringify(res.data.weblinks))
@@ -189,9 +228,10 @@ export default function Links() {
                     <Modal
                         title="Edit"
                         visible={visible}
-                        onOk={handleOk}
                         confirmLoading={confirmLoading}
                         onCancel={handleCancel}
+                        destroyOnClose={true}
+                        footer={null}
                     >
                         <Form
                             name="basic"
@@ -202,9 +242,13 @@ export default function Links() {
                                 span: 16,
                             }}
                             initialValues={{
-                                remember: true,
+                                title: editForm.title,
+                                link: editForm.link,
+                                category: editForm.category,
+                                description: editForm.description
+
                             }}
-                            onFinish={handleOk}
+                            onFinish={onFinish}
                             autoComplete="off"
                         >
                             <Form.Item
@@ -217,24 +261,12 @@ export default function Links() {
                             <Form.Item
                                 label="link"
                                 name="link"
-                                // rules={[
-                                //     {
-                                //         required: true,
-                                //         message: 'Please input your password!',
-                                //     },
-                                // ]}
                             >
                                 <Input key={editForm.link} defaultValue={editForm.link}/>
                             </Form.Item>
                             <Form.Item
                                 label="description"
                                 name="description"
-                                // rules={[
-                                //     {
-                                //         required: true,
-                                //         message: 'Please input your password!',
-                                //     },
-                                // ]}
                             >
                                 <Input key={editForm.description} defaultValue={editForm.description}/>
                             </Form.Item>
@@ -247,6 +279,7 @@ export default function Links() {
                                     <Option value="Training">Training</Option>
                                     <Option value="Award">Award</Option>
                                     <Option value="Perks">Perks</Option>
+                                    <Option value="Other">Other</Option>
                                 </Select>
                             </Form.Item>
                             <Form.Item
@@ -266,7 +299,71 @@ export default function Links() {
         }
     ];
 
-    return (
+    return (<div>
+        <Button type="primary" onClick={showModalAdd}>Add Link</Button>
+            <Modal
+                title="Edit"
+                visible={visibleAdd}
+                confirmLoading={confirmLoadingAdd}
+                onCancel={handleCancelAdd}
+                destroyOnClose={true}
+                footer={null}
+            >
+                <Form
+                    name="basic"
+                    labelCol={{
+                        span: 6,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
+
+                    onFinish={onAdd}
+                    autoComplete="off"
+                >
+                    <Form.Item
+                        label="title"
+                        name="title"
+                    >
+                        <Input key={"title"}/>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="link"
+                        name="link"
+                    >
+                        <Input key={"link"} placeholder="Please input link without 'https://'"/>
+                    </Form.Item>
+                    <Form.Item
+                        label="description"
+                        name="description"
+                    >
+                        <Input key={"description"}/>
+                    </Form.Item>
+                    <Form.Item label="category" name="category">
+                        <Select style={{ width: 120 }}>
+                            <Option value="Finance">Finance</Option>
+                            <Option value="Data">Data</Option>
+                            <Option value="Dashboards/ IR visualization tools">Dashboards/ IR visualization tools</Option>
+                            <Option value="Facility/Support">Facility/Support</Option>
+                            <Option value="Training">Training</Option>
+                            <Option value="Award">Award</Option>
+                            <Option value="Perks">Perks</Option>
+                            <Option value="Other">Other</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        wrapperCol={{
+                            offset: 8,
+                            span: 16,
+                        }}
+                    >
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         <Collapse defaultActiveKey={['1']} onChange={onChange}>
             <Panel header="Perks" key="1">
                 <p><Table dataSource={perksList} columns={columns} scroll={{y: 240}} pagination={false} size="small"/>
@@ -296,6 +393,11 @@ export default function Links() {
                 <p><Table dataSource={awardsList} columns={columns} scroll={{y: 240}} pagination={false} size="small"/>
                 </p>
             </Panel>
+            <Panel header="Other" key="8">
+                <p><Table dataSource={otherList} columns={columns} scroll={{y: 240}} pagination={false} size="small"/>
+                </p>
+            </Panel>
         </Collapse>
+        </div>
     )
 }

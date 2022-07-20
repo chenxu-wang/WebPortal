@@ -9,7 +9,6 @@ import {LoginApi} from "../request/api";
 export default function Login() {
     const navigate = useNavigate()
     const onFinish = (values) => {
-        console.log('Success:', values);
         LoginApi({
             username: values.username,
             password: values.password

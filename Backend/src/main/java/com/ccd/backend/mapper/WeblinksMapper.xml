@@ -25,8 +25,8 @@
         </where>
     </sql>
     <insert id="create"  keyProperty="id" useGeneratedKeys="true" parameterType="com.ccd.backend.entity.Weblinks">
-        insert into weblinks(id,link,title)
-            value(#{id},#{link},#{title})
+        insert into weblinks(id,link,title, description, category)
+            value(#{id},#{link},#{title}, #{description}, #{category})
     </insert>
     <select id="query" resultMap="Weblinks">
         select * from weblinks

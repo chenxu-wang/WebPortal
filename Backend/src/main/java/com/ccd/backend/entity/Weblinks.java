@@ -21,6 +21,12 @@ public class Weblinks {
         this.description = description;
         this.category = category;
     }
+    public Weblinks(String link, String title, String description, String category) {
+        this.link = link;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+    }
 
     public Integer getId() {
         return id;
