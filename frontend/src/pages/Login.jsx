@@ -19,7 +19,7 @@ export default function Login() {
                 localStorage.setItem("username",res.data.user.username)
                 localStorage.setItem("usertype",res.data.user.usertype)
                 setTimeout(()=>{
-                    navigate('/')
+                    navigate('/homepage')
                 },1500)
             }else{
                 message.error(res.msg);

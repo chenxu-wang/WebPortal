@@ -1,33 +1,36 @@
 import React, { useState} from 'react'
-import { Upload, Button, message, Form, Spin } from 'antd';
-
+import { Upload, Button, message, Form, Spin, Input } from 'antd';
 const { Dragger } = Upload;
 
 export default function Autogen() {
     const [fileList, setFileList] = useState([])
-    const [pptUrl, setPptUrl] = useState()
     const [loading, setLoading] = useState(false);
+    const [fontSize, setFontSize] = useState('20')
+
+
     const uploadFile = () => {
         setLoading(true)
         for (const item of fileList) {
             const formData = new FormData()
             formData.append('file', item)
-            const url = 'http://localhost:8081/Backend/importExcel';  //与后端上传接口一致
+            formData.append('titleSize', fontSize)
+            const url = 'http://localhost:8081/Backend/importExcel';
             fetch(url, {
                 method: 'POST',
+
                 body: formData,
                 headers: {
                     'token': localStorage.getItem('token')
                 }
             }).then((response) => {
+                    message.success("PowerPoint generated successful!")
                     setLoading(false)
                     response.blob().then(blob => {
                         const aLink = document.createElement('a');
                         document.body.appendChild(aLink);
                         aLink.style.display='none';
                         const objectUrl = window.URL.createObjectURL(blob);
-                        console.log(blob)
-                        setPptUrl(blob)
+                        console.log(objectUrl)
                         aLink.href = objectUrl;
                         aLink.download = "generatedPPT.pptx";
                         aLink.click();
@@ -45,10 +48,15 @@ export default function Autogen() {
         multiple: false,
         maxCount: 1,
         accept: "application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/pdf, image/jpeg, image/png",
-        action: 'http://localhost:8081/Backend/importExcel',
+        // action: 'http://localhost:8081/Backend',
+
         headers: {
             authorization: 'authorization-text',
-            'token': localStorage.getItem('token')
+            // 'token': localStorage.getItem('token')
+        },
+        beforeUpload: (file) => {
+            setFileList([...fileList, file]);
+            return false;
         },
         onChange(info) {
             const { status } = info.file;
@@ -65,7 +73,9 @@ export default function Autogen() {
             }
         }
     };
-
+    const fontChange = (event) =>{
+        setFontSize(event.target.value)
+    }
     return (
         <div>
             <Form encType="multipart/form-data" style={{ marginTop:20}}>
@@ -76,14 +86,8 @@ export default function Autogen() {
                     </p>
                 </Dragger>
             </Form>
+            <Input placeholder="Input title size" onChange={fontChange}/>
             <Button type="primary" onClick={uploadFile}><Spin spinning={loading}/>Upload file</Button>
-            <iframe
-                src={`https://view.officeapps.live.com/op/embed.aspx?src=${pptUrl}`}
-                width="100%"
-                height="600px"
-                frameBorder="0"
-            >
-            </iframe>
         </div>
     );
 }

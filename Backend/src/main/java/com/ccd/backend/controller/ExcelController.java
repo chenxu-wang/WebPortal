@@ -4,10 +4,12 @@ import com.ccd.backend.service.ExcelService;
 import com.ccd.backend.service.UserService;
 import com.ccd.backend.utils.Maps;
 import com.ccd.backend.utils.Result;
+import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.util.Units;
+import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
 import org.apache.poi.xslf.usermodel.XSLFChart;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
@@ -29,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ExcelController {
@@ -37,7 +40,7 @@ public class ExcelController {
 
     @PostMapping("/importExcel")
     @ResponseBody
-    public void uploadExcel(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws Exception {
+    public void uploadExcel(@RequestParam("file") MultipartFile file, HttpServletResponse response, @RequestParam("titleSize") String titleSize) throws Exception {
         String powerPointPath = "./src/main/resources/Testppt.pptx";
         response.setContentType("application/vnd.ms-powerpoint");
         response.setHeader("Content-Disposition", "attachment;filename=\"slideshow.ppt\"");
@@ -66,6 +69,21 @@ public class ExcelController {
             slidesList.get(j).addChart(pptCharts.get(j), new java.awt.geom.Rectangle2D.Double(2.6d* Units.EMU_PER_CENTIMETER, 2d*Units.EMU_PER_CENTIMETER, 20d*Units.EMU_PER_CENTIMETER, 15d*Units.EMU_PER_CENTIMETER));
         }
         for(int j =0; j < 33; j++){
+            ((XSSFChart)chartList.get(j)).getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(Integer.parseInt(titleSize)*100);
+
+            //line style of val axis
+//            if (((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr() == null)
+//                ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).addNewSpPr();
+//            if (((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn() == null)
+//                ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().addNewLn();
+//            ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().setW(Units.pixelToEMU(1));
+//            if (((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().getSolidFill() == null)
+//                ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().addNewSolidFill();
+//            if (((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().getSolidFill().getSrgbClr() == null)
+//                ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().getSolidFill().addNewSrgbClr();
+//            ((XSSFChart)chartList.get(j)).getCTChart().getPlotArea().getValAxArray(0).getSpPr().getLn().getSolidFill().getSrgbClr()
+//                    .setVal(new byte[]{(byte)100,(byte)0,(byte)0});
+
             pptCharts.get(j).importContent(chartList.get(j));
             pptCharts.get(j).saveWorkbook((XSSFWorkbook) workbook);
         }
@@ -85,4 +103,5 @@ public class ExcelController {
         slideShow.close();
 
     }
+
 }
