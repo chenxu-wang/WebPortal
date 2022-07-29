@@ -1,11 +1,17 @@
 import React, { useState} from 'react'
 import { Upload, Button, message, Form, Spin, Input } from 'antd';
+import './less/autogen.less'
+import pptEx from "./img.png";
+
 const { Dragger } = Upload;
 
 export default function Autogen() {
     const [fileList, setFileList] = useState([])
     const [loading, setLoading] = useState(false);
-    const [fontSize, setFontSize] = useState('20')
+    const [titleSize, setTitleSize] = useState('20')
+    const [axisNumSize, setAxisNumSize] = useState('8')
+    const [axisTitleSize, setAxisTitleSize] = useState('10')
+    const [legendFontSize, setLegendFontSize] = useState('10')
 
 
     const uploadFile = () => {
@@ -13,7 +19,12 @@ export default function Autogen() {
         for (const item of fileList) {
             const formData = new FormData()
             formData.append('file', item)
-            formData.append('titleSize', fontSize)
+            formData.append('titleSize', titleSize)
+            formData.append('axisNumSize', axisNumSize)
+            formData.append('axisTitleSize', axisTitleSize)
+            // setLegendFontSize(legendFontSize.replace(/[^0-9.]/g,""))
+            formData.append('legendFontSize', legendFontSize)
+
             const url = 'http://localhost:8081/Backend/importExcel';
             fetch(url, {
                 method: 'POST',
@@ -47,7 +58,7 @@ export default function Autogen() {
         name: 'file',
         multiple: false,
         maxCount: 1,
-        accept: "application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-powerpoint, application/pdf, image/jpeg, image/png",
+        accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         // action: 'http://localhost:8081/Backend',
 
         headers: {
@@ -73,8 +84,17 @@ export default function Autogen() {
             }
         }
     };
-    const fontChange = (event) =>{
-        setFontSize(event.target.value)
+    const titleChange = (event) =>{
+        setTitleSize(event.target.value)
+    }
+    const axisNumberChange = (event) =>{
+        setAxisNumSize(event.target.value)
+    }
+    const axisTitleChange = (event) =>{
+        setAxisTitleSize(event.target.value)
+    }
+    const legendFontSizeChange = (event) =>{
+        setLegendFontSize(event.target.value)
     }
     return (
         <div>
@@ -86,7 +106,15 @@ export default function Autogen() {
                     </p>
                 </Dragger>
             </Form>
-            <Input placeholder="Input title size" onChange={fontChange}/>
+            <div className="powerPointExample">
+                <Input className="titleSize" placeholder="Input title size" onChange={titleChange} style={{width:"150px"}}/>
+                <Input className="axisNum" placeholder="Input axis number size" onChange={axisNumberChange}/>
+                <Input className="axisTitle" placeholder="Input axis title size" onChange={axisTitleChange}/>
+                <Input className="legendFont"  placeholder="Input legend font size" onChange={legendFontSizeChange}/>
+            </div>
+            {/*<div>*/}
+            {/*    <label>PowerPoint Example: </label> <img src={pptEx} width="563.2px" height="422.5px" />*/}
+            {/*</div>*/}
             <Button type="primary" onClick={uploadFile}><Spin spinning={loading}/>Upload file</Button>
         </div>
     );
