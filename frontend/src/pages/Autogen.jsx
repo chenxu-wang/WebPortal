@@ -1,5 +1,5 @@
 import React, { useState} from 'react'
-import { Upload, Button, message, Form, Spin, Input } from 'antd';
+import { Upload, Button, message, Form, Spin, Input, Card } from 'antd';
 import './less/autogen.less'
 import pptEx from "./img.png";
 
@@ -16,7 +16,7 @@ export default function Autogen() {
     const [legendFontSize, setLegendFontSize] = useState('10')
     const  [chartWidth, setChartWidth] = useState('22')
     const [chartHeight, setChartHeight] = useState('12')
-    const  [chartX, setChartX] = useState('1.8')
+    const  [chartX, setChartX] = useState('5')
     const [chartY, setChartY] = useState('4.5')
 
     const uploadFile = () => {
@@ -188,14 +188,28 @@ export default function Autogen() {
                 </Dragger>
             </Form>
             <div className="powerPointExample">
+
                 <Input className="titleSize" placeholder="Input title size" onChange={titleChange} style={{width:"150px"}}/>
                 <Input className="axisNum" placeholder="Input axis number size" onChange={axisNumberChange}/>
                 <Input className="axisTitle" placeholder="Input axis title size" onChange={axisTitleChange}/>
                 <Input className="legendFont"  placeholder="Input legend size" onChange={legendFontSizeChange}/>
+                <Card className="instruction"
+                      style={{
+                          width: 300,
+                      }}
+                >
+                    <p>Chart X and Y coordinates are used for setting charts position in slides. Position and size of charts can not be modified for compact version.</p>
+                    <p>All properties have default value:<br/>Title size: 20<br/>Axis number size: 10<br/>
+                     Legend font size: 10<br/>Chart width: 22<br/>Chart height: 12<br/>Chart X coordinate: 5<br/>
+                        Chart Y coordinate: 4.5
+                    </p>
+                </Card>
+
                 <Input className="chartWidth" placeholder="Input chart width" onChange={chartWidthChange}/>
                 <Input className="chartHeight"  placeholder="Input chart height" onChange={chartHeightSizeChange}/>
                 <Input className="chartX" placeholder="Input chart X coordinate" onChange={chartXChange}/>
                 <Input className="chartY"  placeholder="Input chart Y coordinate" onChange={chartYChange}/>
+
             </div>
             {/*<div>*/}
             {/*    <label>PowerPoint Example: </label> <img src={pptEx} width="563.2px" height="422.5px" />*/}

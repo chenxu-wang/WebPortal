@@ -60,6 +60,7 @@ public class ExcelController {
             chartList.add(drawing.getCharts().get(0));        }
         // create new PowerPoint slide show
         XMLSlideShow slideShow = new XMLSlideShow();
+        slideShow.setPageSize(new java.awt.Dimension(960, 540));
         ArrayList<XSLFSlide> slidesList = new ArrayList<>();
         for(int j =3; j < 36; j++){
             slidesList.add(slideShow.createSlide());
