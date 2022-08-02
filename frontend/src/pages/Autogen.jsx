@@ -8,49 +8,117 @@ const { Dragger } = Upload;
 export default function Autogen() {
     const [fileList, setFileList] = useState([])
     const [loading, setLoading] = useState(false);
-    const [titleSize, setTitleSize] = useState('20')
-    const [axisNumSize, setAxisNumSize] = useState('8')
-    const [axisTitleSize, setAxisTitleSize] = useState('10')
-    const [legendFontSize, setLegendFontSize] = useState('10')
+    const [compactLoading, setCompactLoading] = useState(false);
 
+    const [titleSize, setTitleSize] = useState('20')
+    const [axisNumSize, setAxisNumSize] = useState('10')
+    const [axisTitleSize, setAxisTitleSize] = useState('12')
+    const [legendFontSize, setLegendFontSize] = useState('10')
+    const  [chartWidth, setChartWidth] = useState('22')
+    const [chartHeight, setChartHeight] = useState('12')
+    const  [chartX, setChartX] = useState('1.8')
+    const [chartY, setChartY] = useState('4.5')
 
     const uploadFile = () => {
+        if(fileList.length === 0){
+            message.error("Please select the file for generating PowerPoint")
+            return
+        }
+
         setLoading(true)
+        let i = 0
         for (const item of fileList) {
-            const formData = new FormData()
-            formData.append('file', item)
-            formData.append('titleSize', titleSize)
-            formData.append('axisNumSize', axisNumSize)
-            formData.append('axisTitleSize', axisTitleSize)
-            // setLegendFontSize(legendFontSize.replace(/[^0-9.]/g,""))
-            formData.append('legendFontSize', legendFontSize)
+            i = i + 1
+            if (i === fileList.length) {
+                const formData = new FormData()
+                formData.append('file', item)
+                formData.append('titleSize', titleSize)
+                formData.append('axisNumSize', axisNumSize)
+                formData.append('axisTitleSize', axisTitleSize)
+                formData.append('legendFontSize', legendFontSize)
+                formData.append('chartWidth', chartWidth)
+                formData.append('chartHeight', chartHeight)
+                formData.append('chartX', chartX)
+                formData.append('chartY', chartY)
 
-            const url = 'http://localhost:8081/Backend/importExcel';
-            fetch(url, {
-                method: 'POST',
+                const url = 'http://localhost:8081/Backend/excel/downloadStandard';
+                fetch(url, {
+                    method: 'POST',
 
-                body: formData,
-                headers: {
-                    'token': localStorage.getItem('token')
-                }
-            }).then((response) => {
-                    message.success("PowerPoint generated successful!")
-                    setLoading(false)
-                    response.blob().then(blob => {
-                        const aLink = document.createElement('a');
-                        document.body.appendChild(aLink);
-                        aLink.style.display='none';
-                        const objectUrl = window.URL.createObjectURL(blob);
-                        console.log(objectUrl)
-                        aLink.href = objectUrl;
-                        aLink.download = "generatedPPT.pptx";
-                        aLink.click();
-                        document.body.removeChild(aLink);
-                    });
+                    body: formData,
+                    headers: {
+                        'token': localStorage.getItem('token')
+                    }
+                }).then((response) => {
+                        message.success("PowerPoint generated successful!")
+                        setLoading(false)
+                        response.blob().then(blob => {
+                            const aLink = document.createElement('a');
+                            document.body.appendChild(aLink);
+                            aLink.style.display = 'none';
+                            const objectUrl = window.URL.createObjectURL(blob);
+                            console.log(objectUrl)
+                            aLink.href = objectUrl;
+                            aLink.download = "generatedPPT.pptx";
+                            aLink.click();
+                            document.body.removeChild(aLink);
+                        });
+                    }
+                ).catch((error) => {
+                    console.log('error', error);
+                });
             }
-            ).catch((error) => {
-                console.log('error', error);
-            });
+        }
+    }
+    const downloadCompact = () => {
+        if(fileList.length === 0){
+            message.error("Please select the file for generating PowerPoint")
+            return
+        }
+
+        setCompactLoading(true)
+        let i = 0
+        for (const item of fileList) {
+            i = i + 1
+            if (i === fileList.length) {
+                const formData = new FormData()
+                formData.append('file', item)
+                formData.append('titleSize', titleSize)
+                formData.append('axisNumSize', axisNumSize)
+                formData.append('axisTitleSize', axisTitleSize)
+                formData.append('legendFontSize', legendFontSize)
+                formData.append('chartWidth', chartWidth)
+                formData.append('chartHeight', chartHeight)
+                formData.append('chartX', chartX)
+                formData.append('chartY', chartY)
+
+                const url = 'http://localhost:8081/Backend/excel/downloadCompact';
+                fetch(url, {
+                    method: 'POST',
+
+                    body: formData,
+                    headers: {
+                        'token': localStorage.getItem('token')
+                    }
+                }).then((response) => {
+                        message.success("PowerPoint generated successful!")
+                        setCompactLoading(false)
+                        response.blob().then(blob => {
+                            const aLink = document.createElement('a');
+                            document.body.appendChild(aLink);
+                            aLink.style.display = 'none';
+                            const objectUrl = window.URL.createObjectURL(blob);
+                            console.log(objectUrl)
+                            aLink.href = objectUrl;
+                            aLink.download = "generatedPPT.pptx";
+                            aLink.click();
+                            document.body.removeChild(aLink);
+                        });
+                    }
+                ).catch((error) => {
+                    console.log('error', error);
+                });
+            }
         }
     }
 
@@ -66,6 +134,7 @@ export default function Autogen() {
             // 'token': localStorage.getItem('token')
         },
         beforeUpload: (file) => {
+
             setFileList([...fileList, file]);
             return false;
         },
@@ -78,7 +147,7 @@ export default function Autogen() {
                 message.success(`${info.file.name} file uploaded successfully.`);
                 setFileList([info.file.originFileObj])
             } else if (status === 'removed') {
-                fileList.splice(fileList.indexOf(info.file.originFileObj), 1)
+                setFileList(fileList.splice(fileList.indexOf(info.file.originFileObj), 1))
             } else if (status === 'error') {
                 message.error(`${info.file.name} file upload failed.`);
             }
@@ -96,6 +165,18 @@ export default function Autogen() {
     const legendFontSizeChange = (event) =>{
         setLegendFontSize(event.target.value)
     }
+    const chartWidthChange = (event) =>{
+        setChartWidth(event.target.value)
+    }
+    const chartHeightSizeChange = (event) =>{
+        setChartHeight(event.target.value)
+    }
+    const chartXChange = (event) =>{
+        setChartX(event.target.value)
+    }
+    const chartYChange = (event) =>{
+        setChartY(event.target.value)
+    }
     return (
         <div>
             <Form encType="multipart/form-data" style={{ marginTop:20}}>
@@ -110,12 +191,17 @@ export default function Autogen() {
                 <Input className="titleSize" placeholder="Input title size" onChange={titleChange} style={{width:"150px"}}/>
                 <Input className="axisNum" placeholder="Input axis number size" onChange={axisNumberChange}/>
                 <Input className="axisTitle" placeholder="Input axis title size" onChange={axisTitleChange}/>
-                <Input className="legendFont"  placeholder="Input legend font size" onChange={legendFontSizeChange}/>
+                <Input className="legendFont"  placeholder="Input legend size" onChange={legendFontSizeChange}/>
+                <Input className="chartWidth" placeholder="Input chart width" onChange={chartWidthChange}/>
+                <Input className="chartHeight"  placeholder="Input chart height" onChange={chartHeightSizeChange}/>
+                <Input className="chartX" placeholder="Input chart X coordinate" onChange={chartXChange}/>
+                <Input className="chartY"  placeholder="Input chart Y coordinate" onChange={chartYChange}/>
             </div>
             {/*<div>*/}
             {/*    <label>PowerPoint Example: </label> <img src={pptEx} width="563.2px" height="422.5px" />*/}
             {/*</div>*/}
-            <Button type="primary" onClick={uploadFile}><Spin spinning={loading}/>Upload file</Button>
+            <Button type="primary" onClick={uploadFile}><Spin spinning={loading}/>Download standard PowerPoint</Button>
+            <Button className="downloadCompact" type="primary" onClick={downloadCompact}><Spin spinning={compactLoading}/>Download compact PowerPoint</Button>
         </div>
     );
 }
